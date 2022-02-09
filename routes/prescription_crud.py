@@ -90,6 +90,6 @@ def actionCopyPrescription(idPrescription):
     dbSession.setSchema(user.schema)
     os.environ['TZ'] = 'America/Sao_Paulo'
 
-    #copyPrescription(idPrescription, user)
+    copyPrescription(idPrescription, user)
 
     return tryCommit(db, 1, user.permission())
