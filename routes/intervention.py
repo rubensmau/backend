@@ -118,7 +118,8 @@ def search_interventions():
     
     results = intervention_service.get_interventions(\
         admissionNumber=data.get("admissionNumber", None),\
-        startDate=data.get("startDate", None)\
+        startDate=data.get("startDate", None),\
+        endDate=data.get("endDate", None)\
     )
 
     return {
