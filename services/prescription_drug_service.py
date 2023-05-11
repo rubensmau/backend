@@ -18,6 +18,40 @@ def getPrescriptionDrug(idPrescriptionDrug):
         .filter(PrescriptionDrug.id == idPrescriptionDrug)\
         .first()
 
+def check_prescription_drug(user, admissionNumber, aggDate, checked, is_pmc, is_cpoe):
+    if is_cpoe:
+        q = db.session\
+            .query(PrescriptionDrug.id)\
+            .select_from(PrescriptionDrug)\
+            .outerjoin(Prescription, Prescription.id == PrescriptionDrug.idPrescription)\
+            .filter(Prescription.admissionNumber == admissionNumber)\
+            .filter(Prescription.agg == None)\
+            .filter(Prescription.concilia == None)\
+            .filter(\
+                or_(\
+                    PrescriptionDrug.suspendedDate == None,\
+                    func.date(PrescriptionDrug.suspendedDate) >= func.date(aggDate)\
+                )\
+            )
+        
+        q = get_period_filter(q, Prescription, aggDate, is_pmc, is_cpoe)
+        q = q.filter(\
+                or_(\
+                    PrescriptionDrug.suspendedDate == None,\
+                    func.date(PrescriptionDrug.suspendedDate) >= func.date(aggDate)\
+                )\
+            )
+        
+        qupdate = db.session\
+            .query(PrescriptionDrug)\
+            .filter(PrescriptionDrug.id.in_(q))
+
+        qupdate.update({
+            'checked': checked,
+            'update': datetime.today(),
+            'user': user.id
+        }, synchronize_session='fetch')
+
 def has_unchecked_drugs(idPrescription):
     count = db.session.query(PrescriptionDrug)\
         .filter(PrescriptionDrug.idPrescription == idPrescription)\

@@ -13,7 +13,7 @@ from .utils import *
 from sqlalchemy import func, between
 from datetime import date, datetime
 from .drugList import DrugList
-from services import memory_service, prescription_service
+from services import memory_service, prescription_service, prescription_drug_service
 from converter import prescription_converter
 from models.enums import MemoryEnum
 
@@ -376,6 +376,13 @@ def setPrescriptionStatus(idPrescription):
             'update': datetime.today(),
             'user': user.id
             }, synchronize_session='fetch')
+
+            if is_cpoe:
+                #check/uncheck all drugs (only for cpoe)
+                prescription_drug_service.check_prescription_drug(\
+                    user=user, admissionNumber=p.admissionNumber, aggDate=p.date, checked=p.status == 's',\
+                    is_pmc=is_pmc, is_cpoe=is_cpoe
+                )
         else:
             Prescription.checkPrescriptions(p.admissionNumber, p.date, p.idSegment, user.id, is_cpoe, is_pmc)
 
