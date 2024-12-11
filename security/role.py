@@ -152,7 +152,9 @@ class Role(Enum):
 
     REGULATOR = "REGULATOR", [Permission.READ_REGULATION, Permission.WRITE_REGULATION]
 
-    STATIC_USER = "STATIC_USER", [Permission.READ_STATIC]
+    STATIC_USER = "STATIC_USER", [Permission.READ_STATIC, Permission.CHECK_STATIC]
+
+    ORGANIZATION_MANAGER = "ORGANIZATION_MANAGER", [Permission.MULTI_SCHEMA]
 
     @staticmethod
     def get_permissions_from_user(user: User) -> List[Permission]:
@@ -166,3 +168,13 @@ class Role(Enum):
                 pass
 
         return user_permissions
+
+    @staticmethod
+    def get_special_roles():
+        return [
+            Role.ADMIN.value,
+            Role.CURATOR.value,
+            Role.ORGANIZATION_MANAGER.value,
+            Role.STATIC_USER.value,
+            Role.SERVICE_INTEGRATOR.value,
+        ]
