@@ -102,6 +102,7 @@ def _internal_get_prescription(
         alerts_data=alerts_data,
         exams_data=exam_data,
         config_data=config_data,
+        is_complete=is_complete,
     )
 
     review_data = _get_review_data(prescription=prescription, is_complete=is_complete)
@@ -373,7 +374,9 @@ def _get_clinical_notes_stats(
     is_complete: bool,
     user_context: User,
 ):
-    is_cache_active = memory_service.is_feature_active(AppFeatureFlagEnum.REDIS_CACHE)
+    is_cache_active = feature_service.has_feature_flag(
+        flag=AppFeatureFlagEnum.REDIS_CACHE
+    )
 
     cn_stats = clinical_notes_queries_service.get_admission_stats(
         admission_number=prescription.admissionNumber,
@@ -455,12 +458,18 @@ def _get_exams(
     is_complete: bool,
     user_context: User,
 ):
+    if is_complete:
+        is_cache_active = False
+    else:
+        is_cache_active = feature_service.has_feature_flag(
+            flag=AppFeatureFlagEnum.REDIS_CACHE_EXAMS
+        )
     exams = exams_service.find_latest_exams(
         patient=patient,
         idSegment=prescription.idSegment,
         schema=user_context.schema,
         add_previous_exams=is_complete,
-        cache=False,
+        cache=is_cache_active,
     )
 
     examsJson = []
@@ -522,6 +531,7 @@ def _get_drug_data(
     alerts_data: dict,
     exams_data: dict,
     config_data: dict,
+    is_complete: bool,
 ):
     drug_list = DrugList(
         drugList=drugs,
@@ -577,6 +587,9 @@ def _get_drug_data(
                 is_cpoe=config_data["is_cpoe"],
             )
             concilia_list = drug_list.conciliaList(concilia_drugs, [])
+
+        if is_complete and concilia_list:
+            p_drugs = drug_list.infer_substance(pDrugs=p_drugs)
 
     return {
         "drug_list": drug_list,

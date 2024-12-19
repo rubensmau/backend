@@ -54,6 +54,7 @@ class FeatureEnum(Enum):
     CONCILIATION_EDIT = "CONCILIATION_EDIT"
     DISABLE_CPOE = "DISABLE_CPOE"
     STAGING_ACCESS = "STAGING_ACCESS"
+    AUTOMATIC_CHECK_IF_NOT_VALIDATED_ITENS = "AUTOMATIC_CHECK_IF_NOT_VALIDATED_ITENS"
 
 
 class PrescriptionAuditTypeEnum(Enum):
@@ -64,11 +65,14 @@ class PrescriptionAuditTypeEnum(Enum):
     INTEGRATION_CLINICAL_NOTES = 5
     INTEGRATION_PRESCRIPTION_RELEASE = 6
     UPSERT_CLINICAL_NOTES = 7
+    CREATE_AGG = 8
+    ERROR_INTEGRATION_PRESCRIPTION_RELEASE = 9
 
 
 class PrescriptionDrugAuditTypeEnum(Enum):
     PROCESSED = 1
     UPSERT = 2
+    INTEGRATION_PRESCRIPTION_DRUG_RELEASE = 3
 
 
 class PrescriptionReviewTypeEnum(Enum):
@@ -126,6 +130,7 @@ class NifiQueueActionTypeEnum(Enum):
     TERMINATE_PROCESS = "TERMINATE_PROCESS"
     CUSTOM_CALLBACK = "CUSTOM_CALLBACK"
     REFRESH_TEMPLATE = "REFRESH_TEMPLATE"
+    UPDATE_PROPERTY = "UPDATE_PROPERTY"
 
 
 class DrugAlertTypeEnum(Enum):
@@ -169,3 +174,12 @@ class PatientConciliationStatusEnum(Enum):
 
 class AppFeatureFlagEnum(Enum):
     REDIS_CACHE = "redisCache"
+    REDIS_CACHE_EXAMS = "redisCacheExams"
+
+
+class FrequencyEnum(Enum):
+    SN = 33
+    ACM = 44
+    CONT = 55
+    NOW = 66
+    UNDEFINED = 99
